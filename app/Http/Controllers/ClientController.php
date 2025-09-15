@@ -34,6 +34,17 @@ class ClientController extends Controller
         return response()->json($clients);
     }
 
+    // گرفتن نام موکل‌ها
+    public function getClients() {
+        $clients = Client::all()->map(function($c){
+            return [
+                'id' => $c->id,
+                'full_name' => $c->fname . ' ' . $c->lname
+            ];
+        });
+        return response()->json($clients);
+    }
+
     // گرفتن اطلاعات یک موکل برای ویرایش
     public function show($id)
     {
