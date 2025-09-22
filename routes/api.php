@@ -25,6 +25,7 @@ Route::post('/store-user', [UserController::class, 'store']);
 Route::get('/show-user/{id}', [UserController::class, 'show']);
 Route::put('/update-user/{id}', [UserController::class, 'update']);
 Route::delete('/delete-user/{id}', [UserController::class, 'destroy']);
+Route::post('/users/{id}/update-profile', [UserController::class, 'updateProfile']);
 
 //********************************** Role Route *************************************
 Route::get('/roles', [RoleController::class, 'index']);
@@ -33,7 +34,7 @@ Route::get('/roles/{id}', [RoleController::class, 'show']);
 Route::put('/roles/{id}', [RoleController::class, 'update']);
 Route::delete('/roles/{id}', [RoleController::class, 'destroy']);
 
-//********************************** Role Route *************************************
+//********************************** File Route *************************************
 Route::get('/files', [FileController::class, 'index']);
 Route::get('/files/{id}', [FileController::class, 'show']);
 Route::post('/files', [FileController::class, 'store']);

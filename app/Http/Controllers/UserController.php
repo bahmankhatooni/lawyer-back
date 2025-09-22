@@ -85,4 +85,38 @@ class UserController extends Controller
             'message' => 'کاربر با موفقیت حذف شد'
         ]);
     }
+// ویرایش پروفایل کاربر
+    public function updateProfile(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        // تغییر رمز عبور
+        if ($request->filled('password')) {
+            $request->validate([
+                'password' => 'required|min:6|confirmed',
+            ]);
+            $user->password = Hash::make($request->password);
+        }
+
+        // آپلود تصویر پروفایل
+        if ($request->hasFile('profile_image')) {
+            $request->validate([
+                'profile_image' => 'image|mimes:jpg,jpeg,png|max:2048',
+            ]);
+
+            $filename = time() . '.' . $request->profile_image->getClientOriginalExtension();
+            $path = $request->profile_image->storeAs('profile_images', $filename, 'public');
+
+            $user->profile_image = '/storage/' . $path;
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'پروفایل با موفقیت بروزرسانی شد',
+            'user' => $user
+        ]);
+    }
+
+
 }

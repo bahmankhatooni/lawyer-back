@@ -10,7 +10,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'fname', 'lname', 'username', 'email', 'password', 'role_id'
+        'fname', 'lname', 'username', 'email', 'password', 'role_id','profile_image'
     ];
 
     protected $hidden = [
@@ -22,4 +22,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+//    protected $appends = ['avatar_url'];
+//
+//    public function getAvatarAttribute()
+//    {
+//        if ($this->profile_image) {
+//            return asset('storage/' . $this->profile_image);
+//        }
+//        return null;
+//    }
+
 }

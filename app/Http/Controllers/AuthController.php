@@ -37,6 +37,7 @@ class AuthController extends Controller
             'message' => 'ورود موفقیت‌آمیز بود',
             'user'    => $user,
             'token'   => $token,
+            'avatar' => $user->profile_image,  // این اضافه بشه
         ]);
     }
 
