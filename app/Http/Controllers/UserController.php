@@ -23,6 +23,7 @@ class UserController extends Controller
             'fname' => 'required|string|max:255',
             'lname' => 'required|string|max:255',
             'username' => 'required|string|max:50|unique:users,username',
+            'phone' => 'nullable|regex:/^09[0-9]{9}$/',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'role_id' => 'required|integer|exists:roles,id',
@@ -55,6 +56,7 @@ class UserController extends Controller
             'fname' => 'required|string|max:255',
             'lname' => 'required|string|max:255',
             'username' => ['required','string','max:50', Rule::unique('users')->ignore($user->id)],
+            'phone' => 'nullable|regex:/^09[0-9]{9}$/',
             'email' => ['required','email', Rule::unique('users')->ignore($user->id)],
             'password' => 'nullable|string|min:6',
             'role_id' => 'required|integer|exists:roles,id',
@@ -90,33 +92,54 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // تغییر رمز عبور
-        if ($request->filled('password')) {
-            $request->validate([
-                'password' => 'required|min:6|confirmed',
-            ]);
-            $user->password = Hash::make($request->password);
+        $request->validate([
+            'email' => 'nullable|email|unique:users,email,'.$user->id,
+            'phone' => 'nullable|string|max:15',
+            'password' => 'nullable|confirmed|min:6',
+            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        // ایمیل و موبایل
+        if ($request->filled('email')) {
+            $user->email = $request->email;
+        }
+        if ($request->filled('phone')) {
+            $user->phone = $request->phone;
         }
 
-        // آپلود تصویر پروفایل
+        // رمز عبور
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->password);
+        }
+
+        // تصویر پروفایل
         if ($request->hasFile('profile_image')) {
-            $request->validate([
-                'profile_image' => 'image|mimes:jpg,jpeg,png|max:2048',
-            ]);
+            $path = storage_path('app/public/profile_images');
+            if (!file_exists($path)) {
+                mkdir($path, 0777, true);
+            }
 
-            $filename = time() . '.' . $request->profile_image->getClientOriginalExtension();
-            $path = $request->profile_image->storeAs('profile_images', $filename, 'public');
+            // حذف عکس قبلی
+            $oldImage = $path.'/'.$user->id.'.jpg';
+            if (file_exists($oldImage)) {
+                unlink($oldImage);
+            }
 
-            $user->profile_image = '/storage/' . $path;
+            // ذخیره عکس جدید با نام id کاربر
+            $file = $request->file('profile_image');
+            $extension = $file->getClientOriginalExtension();
+            $filename = $user->id.'.'.$extension;
+            $file->move($path, $filename);
+
+            // ذخیره مسیر در دیتابیس
+            $user->profile_image = 'storage/profile_images/'.$filename;
         }
 
         $user->save();
 
-        return response()->json([
-            'message' => 'پروفایل با موفقیت بروزرسانی شد',
-            'user' => $user
-        ]);
+        return response()->json(['user' => $user]);
     }
+
 
 
 }
