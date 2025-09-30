@@ -1,13 +1,16 @@
 <?php
 
 
+use App\Http\Controllers\ForgotPassController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
 
+//********************************** Login & Logout Route **********************************
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
@@ -40,3 +43,6 @@ Route::get('/files/{id}', [FileController::class, 'show']);
 Route::post('/files', [FileController::class, 'store']);
 Route::put('/files/{id}', [FileController::class, 'update']);
 Route::delete('/files/{id}', [FileController::class, 'destroy']);
+
+//********************************** ForgotPassword Route *************************************
+Route::post('/forgot-password', [ForgotPassController::class, 'sendNewPassword']);
