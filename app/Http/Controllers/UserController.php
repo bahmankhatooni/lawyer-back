@@ -361,7 +361,7 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
 
-            // جلوگیری از غیرفعال کردن ادمین
+            // جلوگیری از تغییر وضعیت ادمین
             if ($user->isAdmin()) {
                 return response()->json([
                     'success' => false,
@@ -369,6 +369,7 @@ class UserController extends Controller
                 ], 403);
             }
 
+            // تغییر وضعیت کاربر
             $user->update([
                 'is_active' => !$user->is_active
             ]);
